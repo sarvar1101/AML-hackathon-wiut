@@ -1,0 +1,8 @@
+pandas
+pyarrow
+fastparquet
+scikit-learn
+lightgbm
+streamlit
+matplotlib
+seaborn

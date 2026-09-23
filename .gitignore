@@ -1,0 +1,5 @@
+aml_env/
+__pycache__/
+*.parquet
+*.zip
+.DS_Store
