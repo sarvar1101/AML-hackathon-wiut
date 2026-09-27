@@ -49,366 +49,458 @@ _ids = ["sec-approach","sec-overview","sec-target","sec-direction","sec-types",
 _nav_js = ",".join([f"[{json.dumps(a)},{json.dumps(l)}]" for a, l in zip(_ids, _nav)])
 
 # =============================================
-# 4. CSS + JS
+# 4. CSS + JS (CROSS-BROWSER & CROSS-ORIGIN SAFE)
 # =============================================
+MAIN_CSS = f"""
+:root {{
+    --aml-bg: {BG};
+    --aml-text: #faf3e0;
+    --aml-text-muted: #ddd5c4;
+    --aml-accent: #4facfe;
+    --aml-accent-cyan: #00f2fe;
+}}
+
+html, body, .stApp {{
+    background-color: var(--aml-bg) !important;
+    color: var(--aml-text) !important;
+    transition: background-color 0.85s ease !important;
+    font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif !important;
+}}
+
+.stApp * {{
+    font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif !important;
+}}
+
+/* Typography: scoped specifically to text elements, avoiding blanket .stApp div */
+.stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
+.stApp p, .stApp span, .stApp li, .stApp label,
+.stApp .stMarkdown {{
+    color: var(--aml-text) !important;
+}}
+
+[data-testid="stMetricValue"] {{
+    color: var(--aml-text) !important;
+    font-weight: bold !important;
+}}
+[data-testid="stMetricLabel"] {{
+    color: var(--aml-text-muted) !important;
+}}
+
+header[data-testid="stHeader"],
+[data-testid="stSidebar"],
+#MainMenu, .stDeployButton, footer {{
+    display: none !important;
+}}
+
+.block-container {{
+    max-width: 100% !important;
+    padding-left: 20% !important;
+    padding-right: 20% !important;
+    padding-top: 80px !important;
+    padding-bottom: 4rem !important;
+    position: relative;
+    z-index: 10;
+}}
+
+/* Liquid Glass Cards */
+div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"] {{
+    position: relative !important;
+    background: linear-gradient(180deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.05) 35%, rgba(255,255,255,0.02) 100%) !important;
+    backdrop-filter: blur(40px) saturate(180%) brightness(1.08) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.08) !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    border-top: 1px solid rgba(255,255,255,0.38) !important;
+    border-radius: 24px !important;
+    padding: 32px !important;
+    margin-bottom: 24px !important;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.3), 0 2px 0 rgba(255,255,255,0.12) inset, 0 -2px 16px rgba(0,0,0,0.12) inset !important;
+    overflow: hidden !important;
+    transition: box-shadow 0.4s ease, border-color 0.4s ease !important;
+    transform: translateZ(0) !important;
+    contain: paint layout !important;
+}}
+div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"]:hover {{
+    box-shadow: 0 16px 56px rgba(0,0,0,0.35), 0 2px 0 rgba(255,255,255,0.15) inset, 0 -2px 16px rgba(0,0,0,0.1) inset !important;
+    border-top-color: rgba(255,255,255,0.48) !important;
+}}
+div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"]::before {{
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 4% !important;
+    width: 92% !important;
+    height: 52% !important;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.04) 50%, transparent 100%) !important;
+    border-radius: 24px 24px 50% 50% !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+}}
+div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"]::after {{
+    content: '' !important;
+    position: absolute !important;
+    bottom: -1px !important;
+    left: 10% !important;
+    width: 80% !important;
+    height: 35% !important;
+    background: radial-gradient(ellipse at center bottom, rgba(79,172,254,0.06) 0%, transparent 70%) !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+}}
+
+/* Custom Cursor: ONLY enabled on devices with mouse/fine pointer */
+@media (hover: hover) and (pointer: fine) {{
+    .stApp, .stApp a, .stApp button {{
+        cursor: none !important;
+    }}
+}}
+
+/* Glass Pill Buttons */
+button[data-testid="stBaseButton-secondary"] {{
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) !important;
+    backdrop-filter: blur(30px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(160%) !important;
+    color: var(--aml-text) !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    border-top: 1px solid rgba(255,255,255,0.32) !important;
+    border-radius: 28px !important;
+    padding: 10px 28px !important;
+    font-size: 1rem !important;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.1) inset !important;
+    transition: all 0.35s ease !important;
+}}
+button[data-testid="stBaseButton-secondary"]:hover {{
+    background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06)) !important;
+    border-top-color: rgba(255,255,255,0.45) !important;
+    transform: translateY(-1px) !important;
+}}
+
+/* Universal cross-browser animations */
+@keyframes popIn {{
+    0% {{ opacity: 0; transform: scale(0.95) translateY(24px); }}
+    100% {{ opacity: 1; transform: scale(1) translateY(0); }}
+}}
+@keyframes progressDraw {{
+    0% {{ -webkit-clip-path: inset(0 100% 0 0); clip-path: inset(0 100% 0 0); opacity: 0.3; }}
+    100% {{ -webkit-clip-path: inset(0 0 0 0); clip-path: inset(0 0 0 0); opacity: 1; }}
+}}
+@keyframes pieExpand {{
+    0% {{ -webkit-clip-path: circle(0% at 50% 50%); clip-path: circle(0% at 50% 50%); opacity: 0.2; }}
+    100% {{ -webkit-clip-path: circle(75% at 50% 50%); clip-path: circle(75% at 50% 50%); opacity: 1; }}
+}}
+
+.hero-box {{
+    text-align: center;
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}}
+.hero-title {{
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}}
+.hero-sub {{
+    font-size: 1.2rem;
+    color: var(--aml-text-muted) !important;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+}}
+.scroll-ind {{
+    color: var(--aml-accent) !important;
+    animation: bounce 2s infinite;
+}}
+@keyframes bounce {{
+    0%, 20%, 50%, 80%, 100% {{ transform: translateY(0); }}
+    40% {{ transform: translateY(-16px); }}
+    60% {{ transform: translateY(-6px); }}
+}}
+.site-footer {{
+    text-align: center;
+    padding: 40px 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 50px;
+}}
+.site-footer h3 {{
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}}
+.site-footer .frow {{
+    margin: 6px 0;
+    color: #bbb4a2 !important;
+}}
+.section-anchor {{
+    display: block;
+    position: relative;
+    top: -90px;
+    visibility: hidden;
+    height: 0;
+}}
+::-webkit-scrollbar {{ width: 5px; }}
+::-webkit-scrollbar-track {{ background: transparent; }}
+::-webkit-scrollbar-thumb {{ background: rgba(79,172,254,0.3); border-radius: 3px; }}
+
+.hidden-lang-row {{
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}}
+"""
+
+st.markdown(f"<style>{MAIN_CSS}</style>", unsafe_allow_html=True)
+
 custom_ui = f"""
 <script>
 (function() {{
-    var P = window.parent.document, W = window.parent;
-    function boot() {{
-        if (!P.querySelector('.stApp')) {{ setTimeout(boot, 150); return; }}
-        run();
-    }}
-    function run() {{
+    try {{
+        var P = window.parent.document, W = window.parent;
+        if (!P || !W) return;
+        var test = P.body; // Test parent access
 
-    // ── STYLES ──
-    var s = P.getElementById('aml-s');
-    if (s) s.remove();
-    s = P.createElement('style');
-    s.id = 'aml-s';
-    s.textContent = `
-        html, body {{ transition: background-color 0.85s ease !important; }}
-        .stApp, .stApp * {{ font-family:'Comic Sans MS','Comic Sans',cursive !important; }}
-        .stApp {{ background:transparent !important; color:#faf3e0 !important; cursor:none !important; }}
-        *,*::before,*::after {{ cursor:none !important; }}
-        header[data-testid="stHeader"],
-        [data-testid="stSidebar"],
-        #MainMenu,.stDeployButton,footer {{ display:none !important; }}
-
-        .block-container {{
-            max-width:100% !important;
-            padding-left:20% !important; padding-right:20% !important;
-            padding-top:80px !important; padding-bottom:4rem !important;
-            position:relative; z-index:10;
-        }}
-
-        div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"] {{
-            position:relative !important;
-            background:linear-gradient(180deg,rgba(255,255,255,0.13) 0%,rgba(255,255,255,0.05) 35%,rgba(255,255,255,0.02) 100%) !important;
-            backdrop-filter:blur(40px) saturate(180%) brightness(1.08) !important;
-            -webkit-backdrop-filter:blur(40px) saturate(180%) brightness(1.08) !important;
-            border:1px solid rgba(255,255,255,0.18) !important;
-            border-top:1px solid rgba(255,255,255,0.38) !important;
-            border-radius:24px !important; padding:32px !important; margin-bottom:24px !important;
-            box-shadow:0 12px 48px rgba(0,0,0,0.3),0 2px 0 rgba(255,255,255,0.12) inset,0 -2px 16px rgba(0,0,0,0.12) inset !important;
-            overflow:hidden !important; transition:box-shadow 0.4s ease,border-color 0.4s ease !important;
-            transform: translateZ(0) !important;
-            contain: paint layout !important;
-        }}
-        div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"]:hover {{
-            box-shadow:0 16px 56px rgba(0,0,0,0.35),0 2px 0 rgba(255,255,255,0.15) inset,0 -2px 16px rgba(0,0,0,0.1) inset !important;
-            border-top-color:rgba(255,255,255,0.48) !important;
-        }}
-        div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"]::before {{
-            content:'' !important; position:absolute !important; top:0 !important; left:4% !important;
-            width:92% !important; height:52% !important;
-            background:linear-gradient(180deg,rgba(255,255,255,0.15) 0%,rgba(255,255,255,0.04) 50%,transparent 100%) !important;
-            border-radius:24px 24px 50% 50% !important; pointer-events:none !important; z-index:1 !important;
-        }}
-        div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"]::after {{
-            content:'' !important; position:absolute !important; bottom:-1px !important; left:10% !important;
-            width:80% !important; height:35% !important;
-            background:radial-gradient(ellipse at center bottom,rgba(79,172,254,0.06) 0%,transparent 70%) !important;
-            pointer-events:none !important; z-index:1 !important;
-        }}
-
-        .stApp h1,.stApp h2,.stApp h3,.stApp h4,.stApp h5,
-        .stApp p,.stApp span,.stApp li,.stApp label,
-        .stApp .stMarkdown,.stApp div {{ color:#faf3e0 !important; }}
-        [data-testid="stMetricValue"] {{ color:#faf3e0 !important; font-weight:bold !important; }}
-        [data-testid="stMetricLabel"] {{ color:#ddd5c4 !important; }}
-
-        .hero-box {{ text-align:center; min-height:70vh; display:flex; flex-direction:column; justify-content:center; align-items:center; }}
-        .hero-title {{ font-size:3.5rem; font-weight:800; background:linear-gradient(135deg,#4facfe,#00f2fe); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }}
-        .hero-sub {{ font-size:1.2rem; color:#ddd5c4 !important; letter-spacing:4px; text-transform:uppercase; margin-bottom:30px; }}
-        .scroll-ind {{ color:#4facfe !important; animation:bounce 2s infinite; }}
-        @keyframes bounce {{ 0%,20%,50%,80%,100% {{ transform:translateY(0); }} 40% {{ transform:translateY(-16px); }} 60% {{ transform:translateY(-6px); }} }}
-        .site-footer {{ text-align:center; padding:40px 20px; border-top:1px solid rgba(255,255,255,0.1); margin-top:50px; }}
-        .site-footer h3 {{ background:linear-gradient(45deg,#4facfe,#00f2fe); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }}
-        .site-footer .frow {{ margin:6px 0; color:#bbb4a2 !important; }}
-        .section-anchor {{ display:block; position:relative; top:-90px; visibility:hidden; height:0; }}
-        ::-webkit-scrollbar {{ width:5px; }}
-        ::-webkit-scrollbar-track {{ background:transparent; }}
-        ::-webkit-scrollbar-thumb {{ background:rgba(79,172,254,0.3); border-radius:3px; }}
-        button[data-testid="stBaseButton-secondary"] {{
-            background:linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04)) !important;
-            backdrop-filter:blur(30px) saturate(160%) !important; color:#faf3e0 !important;
-            border:1px solid rgba(255,255,255,0.18) !important;
-            border-top:1px solid rgba(255,255,255,0.32) !important;
-            border-radius:28px !important; padding:10px 28px !important; font-size:1rem !important;
-            box-shadow:0 6px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.1) inset !important;
-            transition:all 0.35s ease !important;
-        }}
-        button[data-testid="stBaseButton-secondary"]:hover {{
-            background:linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.06)) !important;
-            border-top-color:rgba(255,255,255,0.45) !important; transform:translateY(-1px) !important;
-        }}
-
-        /* ANIMATIONS */
-        @property --pa {{
-            syntax: '<angle>';
-            initial-value: 0deg;
-            inherits: false;
-        }}
-        @keyframes popIn {{
-            0% {{ opacity:0; transform:scale(0.92) translateY(28px); filter:blur(4px); }}
-            100% {{ opacity:1; transform:scale(1) translateY(0); filter:blur(0); }}
-        }}
-        @keyframes progressDraw {{
-            0% {{ clip-path:inset(0 100% 0 0); opacity:0.3; }}
-            100% {{ clip-path:inset(0 0 0 0); opacity:1; }}
-        }}
-        @keyframes pieLoad {{
-            from {{ --pa:0deg; }}
-            to {{ --pa:360deg; }}
-        }}
-        .pie-anim {{
-            -webkit-mask-image: conic-gradient(from -90deg, #000 var(--pa), transparent 0);
-            mask-image: conic-gradient(from -90deg, #000 var(--pa), transparent 0);
-        }}
-
-        /* lang dropdown */
-        #lang-dd {{ position:absolute; top:42px; right:0;
-            background:linear-gradient(180deg,rgba(30,30,40,0.95),rgba(20,20,30,0.98));
-            backdrop-filter:blur(30px); border:1px solid rgba(255,255,255,0.15);
-            border-radius:12px; padding:4px; min-width:90px; z-index:100000; }}
-        .lang-o {{ padding:7px 14px; border-radius:8px; transition:all 0.2s;
-            font-size:0.82rem; color:#faf3e0; white-space:nowrap; }}
-        .lang-o:hover {{ background:rgba(79,172,254,0.25); }}
-    `;
-    P.head.appendChild(s);
-    P.body.style.backgroundColor = '{BG}';
-
-    // ── NAVBAR ──
-    var nav = P.getElementById('aml-nav');
-    if (nav) nav.remove();
-    nav = P.createElement('div');
-    nav.id = 'aml-nav';
-    nav.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:99999;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 20px;background:linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.03));backdrop-filter:blur(40px) saturate(180%) brightness(1.05);-webkit-backdrop-filter:blur(40px) saturate(180%) brightness(1.05);border-bottom:1px solid rgba(255,255,255,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.08) inset;font-family:Comic Sans MS,cursive;box-sizing:border-box;';
-    var secs = [{_nav_js}];
-    var h = '<span style="position:absolute;left:16px;font-weight:bold;background:linear-gradient(45deg,#4facfe,#00f2fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:0.95rem;">MK</span>';
-    for (var i=0;i<secs.length;i++) {{
-        h += '<a class="nl" href="#" data-target="'+secs[i][0]+'" style="color:#faf3e0;text-decoration:none;padding:4px 10px;border-radius:16px;font-size:0.75rem;border:1px solid transparent;transition:all 0.3s;white-space:nowrap">'+secs[i][1]+'</a>';
-    }}
-    // Language dropdown + theme toggle (right side)
-    h += '<div id="lang-wrap" style="position:absolute;right:54px;display:flex;align-items:center">';
-    h += '<span id="lang-btn" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:18px;padding:5px 12px;font-size:0.78rem;color:#faf3e0;transition:all 0.3s;letter-spacing:1px">{LANG_CODE} ▾</span>';
-    h += '<div id="lang-dd" style="display:none"></div>';
-    h += '</div>';
-    h += '<span id="nav-tb" style="position:absolute;right:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all 0.3s;color:#faf3e0">{TOGGLE_ICON}</span>';
-    nav.innerHTML = h;
-    P.body.appendChild(nav);
-
-    // Nav link clicks
-    nav.querySelectorAll('a.nl').forEach(function(a) {{
-        a.addEventListener('click', function(e) {{
-            e.preventDefault();
-            var el = P.getElementById(this.getAttribute('data-target'));
-            if (el) el.scrollIntoView({{ behavior:'smooth', block:'start' }});
-        }});
-        a.addEventListener('mouseover', function() {{ this.style.background='rgba(79,172,254,0.2)'; this.style.borderColor='rgba(79,172,254,0.4)'; }});
-        a.addEventListener('mouseout', function() {{ this.style.background=''; this.style.borderColor='transparent'; }});
-    }});
-
-    // Theme button
-    var tbn = P.getElementById('nav-tb');
-    tbn.addEventListener('mouseover', function() {{ this.style.background='rgba(79,172,254,0.25)'; this.style.transform='scale(1.1)'; }});
-    tbn.addEventListener('mouseout', function() {{ this.style.background='rgba(255,255,255,0.08)'; this.style.transform='scale(1)'; }});
-    tbn.addEventListener('click', function() {{
-        var bs = P.querySelectorAll('button');
-        for (var b of bs) {{ var x=b.textContent||''; if(x.indexOf('тема')!==-1||x.indexOf('Light')!==-1||x.indexOf('Dark')!==-1||x.indexOf('Yorug')!==-1||x.indexOf('Qorong')!==-1||x.indexOf('☀')!==-1||x.indexOf('🌙')!==-1) {{ b.click(); return; }} }}
-    }});
-
-    // Language dropdown
-    var langBtn = P.getElementById('lang-btn');
-    var langDd = P.getElementById('lang-dd');
-    langDd.innerHTML = '<div class="lang-o" data-lang="en">English</div><div class="lang-o" data-lang="ru">Русский</div><div class="lang-o" data-lang="uz">O\\'zbek</div>';
-    langBtn.addEventListener('mouseover', function() {{ this.style.background='rgba(79,172,254,0.25)'; }});
-    langBtn.addEventListener('mouseout', function() {{ this.style.background='rgba(255,255,255,0.08)'; }});
-    langBtn.addEventListener('click', function(e) {{
-        e.stopPropagation();
-        langDd.style.display = langDd.style.display === 'none' ? 'block' : 'none';
-    }});
-    P.addEventListener('click', function() {{ langDd.style.display = 'none'; }});
-    langDd.querySelectorAll('.lang-o').forEach(function(o) {{
-        o.addEventListener('click', function(e) {{
-            e.stopPropagation();
-            var code = this.getAttribute('data-lang');
-            langDd.style.display = 'none';
-            // Find and click hidden Streamlit language button
-            var bs = P.querySelectorAll('button');
-            for (var b of bs) {{
-                if ((b.textContent||'').trim() === 'LANG_' + code) {{ b.click(); return; }}
+        function boot() {{
+            try {{
+                if (!P.querySelector('.stApp')) {{ setTimeout(boot, 150); return; }}
+                run();
+            }} catch (err) {{
+                console.warn("Iframe cross-origin guard:", err);
             }}
-        }});
-    }});
+        }}
 
-    // Hide language button row
-    function hideRow() {{
-        var bs = P.querySelectorAll('button');
-        for (var b of bs) {{
-            if ((b.textContent||'').indexOf('LANG_') === 0) {{
-                var el = b;
-                while (el && el !== P.body) {{
-                    el = el.parentElement;
-                    if (el && el.getAttribute && el.getAttribute('data-testid') === 'stHorizontalBlock') {{
-                        el.style.cssText = 'height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;position:absolute!important;opacity:0!important;pointer-events:none!important;';
+        function run() {{
+            try {{ P.body.style.backgroundColor = '{BG}'; }} catch(e){{}}
+
+            // ── NAVBAR ──
+            var nav = P.getElementById('aml-nav');
+            if (nav) nav.remove();
+            nav = P.createElement('div');
+            nav.id = 'aml-nav';
+            nav.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:99999;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 20px;background:linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.03));backdrop-filter:blur(40px) saturate(180%) brightness(1.05);-webkit-backdrop-filter:blur(40px) saturate(180%) brightness(1.05);border-bottom:1px solid rgba(255,255,255,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.08) inset;font-family:Comic Sans MS,cursive;box-sizing:border-box;';
+            var secs = [{_nav_js}];
+            var h = '<span style="position:absolute;left:16px;font-weight:bold;background:linear-gradient(45deg,#4facfe,#00f2fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:0.95rem;">MK</span>';
+            for (var i=0; i<secs.length; i++) {{
+                h += '<a class="nl" href="#" data-target="'+secs[i][0]+'" style="color:#faf3e0;text-decoration:none;padding:4px 10px;border-radius:16px;font-size:0.75rem;border:1px solid transparent;transition:all 0.3s;white-space:nowrap">'+secs[i][1]+'</a>';
+            }}
+            h += '<div id="lang-wrap" style="position:absolute;right:54px;display:flex;align-items:center">';
+            h += '<span id="lang-btn" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:18px;padding:5px 12px;font-size:0.78rem;color:#faf3e0;transition:all 0.3s;letter-spacing:1px;cursor:pointer">{LANG_CODE} ▾</span>';
+            h += '<div id="lang-dd" style="display:none;position:absolute;top:38px;right:0;background:linear-gradient(180deg,rgba(30,30,40,0.96),rgba(20,20,30,0.98));backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:4px;min-width:96px;box-shadow:0 8px 32px rgba(0,0,0,0.4);"></div>';
+            h += '</div>';
+            h += '<span id="nav-tb" style="position:absolute;right:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all 0.3s;color:#faf3e0;cursor:pointer">{TOGGLE_ICON}</span>';
+            nav.innerHTML = h;
+            P.body.appendChild(nav);
+
+            // Nav link clicks
+            nav.querySelectorAll('a.nl').forEach(function(a) {{
+                a.addEventListener('click', function(e) {{
+                    e.preventDefault();
+                    var el = P.getElementById(this.getAttribute('data-target'));
+                    if (el) el.scrollIntoView({{ behavior:'smooth', block:'start' }});
+                }});
+                a.addEventListener('mouseover', function() {{ this.style.background='rgba(79,172,254,0.2)'; this.style.borderColor='rgba(79,172,254,0.4)'; }});
+                a.addEventListener('mouseout', function() {{ this.style.background=''; this.style.borderColor='transparent'; }});
+            }});
+
+            // Theme button trigger
+            var tbn = P.getElementById('nav-tb');
+            tbn.addEventListener('mouseover', function() {{ this.style.background='rgba(79,172,254,0.25)'; this.style.transform='scale(1.1)'; }});
+            tbn.addEventListener('mouseout', function() {{ this.style.background='rgba(255,255,255,0.08)'; this.style.transform='scale(1)'; }});
+            tbn.addEventListener('click', function() {{
+                var bs = P.querySelectorAll('button');
+                for (var b of bs) {{
+                    var x = b.textContent || '';
+                    if (x.indexOf('тема') !== -1 || x.indexOf('Light') !== -1 || x.indexOf('Dark') !== -1 || x.indexOf('Yorug') !== -1 || x.indexOf('Qorong') !== -1 || x.indexOf('☀') !== -1 || x.indexOf('🌙') !== -1) {{
+                        b.click();
                         return;
                     }}
                 }}
+            }});
+
+            // Language dropdown
+            var langBtn = P.getElementById('lang-btn');
+            var langDd = P.getElementById('lang-dd');
+            langDd.innerHTML = '<div class="lang-o" data-lang="en" style="padding:7px 14px;border-radius:8px;font-size:0.82rem;color:#faf3e0;cursor:pointer;transition:all 0.2s">English</div><div class="lang-o" data-lang="ru" style="padding:7px 14px;border-radius:8px;font-size:0.82rem;color:#faf3e0;cursor:pointer;transition:all 0.2s">Русский</div><div class="lang-o" data-lang="uz" style="padding:7px 14px;border-radius:8px;font-size:0.82rem;color:#faf3e0;cursor:pointer;transition:all 0.2s">O\\'zbek</div>';
+            langBtn.addEventListener('mouseover', function() {{ this.style.background='rgba(79,172,254,0.25)'; }});
+            langBtn.addEventListener('mouseout', function() {{ this.style.background='rgba(255,255,255,0.08)'; }});
+            langBtn.addEventListener('click', function(e) {{
+                e.stopPropagation();
+                langDd.style.display = langDd.style.display === 'none' ? 'block' : 'none';
+            }});
+            P.addEventListener('click', function() {{ langDd.style.display = 'none'; }});
+            langDd.querySelectorAll('.lang-o').forEach(function(o) {{
+                o.addEventListener('mouseover', function() {{ this.style.background='rgba(79,172,254,0.25)'; }});
+                o.addEventListener('mouseout', function() {{ this.style.background='transparent'; }});
+                o.addEventListener('click', function(e) {{
+                    e.stopPropagation();
+                    var code = this.getAttribute('data-lang');
+                    langDd.style.display = 'none';
+                    var bs = P.querySelectorAll('button');
+                    for (var b of bs) {{
+                        if ((b.textContent||'').trim() === 'LANG_' + code) {{ b.click(); return; }}
+                    }}
+                }});
+            }});
+
+            // ── CURSOR (ONLY IF FINE MOUSE POINTER) ──
+            var hasFinePointer = W.matchMedia && W.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            if (hasFinePointer) {{
+                var cur = P.getElementById('aml-c');
+                if (cur) cur.remove();
+                cur = P.createElement('div');
+                cur.id = 'aml-c';
+                cur.style.cssText = 'position:fixed;top:0;left:0;width:26px;height:26px;border:2px solid rgba(79,172,254,0.85);border-radius:50%;pointer-events:none;z-index:999999;background:rgba(79,172,254,0.06);will-change:transform;transition:width 0.2s,height 0.2s,border-color 0.2s,background 0.2s;';
+                P.body.appendChild(cur);
+                var mx=W.innerWidth/2, my=W.innerHeight/2, cx=mx, cy=my, hov=false;
+                var lastMx = -1, lastMy = -1;
+                P.addEventListener('mousemove', function(e) {{ mx=e.clientX; my=e.clientY; }}, {{passive:true}});
+                P.addEventListener('mouseover', function(e) {{ if(e.target.closest('a,button,[role=button],input,select,textarea,[onclick],.lang-o')) hov=true; }});
+                P.addEventListener('mouseout',  function(e) {{ if(e.target.closest('a,button,[role=button],input,select,textarea,[onclick],.lang-o')) hov=false; }});
+                (function tick() {{
+                    cx += (mx - cx) * 0.18;
+                    cy += (my - cy) * 0.18;
+                    if (Math.abs(cx - lastMx) > 0.08 || Math.abs(cy - lastMy) > 0.08) {{
+                        lastMx = cx; lastMy = cy;
+                        var sz = hov ? 46 : 26, hs = sz / 2;
+                        cur.style.width = sz + 'px';
+                        cur.style.height = sz + 'px';
+                        cur.style.borderColor = hov ? '#00f2fe' : 'rgba(79,172,254,0.85)';
+                        cur.style.background = hov ? 'rgba(0,242,254,0.12)' : 'rgba(79,172,254,0.06)';
+                        cur.style.transform = 'translate3d(' + (cx - hs) + 'px,' + (cy - hs) + 'px, 0)';
+                    }}
+                    requestAnimationFrame(tick);
+                }})();
             }}
-        }}
-        setTimeout(hideRow, 200);
-    }}
-    hideRow();
 
-    // ── CURSOR ──
-    var cur = P.getElementById('aml-c');
-    if (cur) cur.remove();
-    cur = P.createElement('div');
-    cur.id = 'aml-c';
-    cur.style.cssText = 'position:fixed;top:0;left:0;width:26px;height:26px;border:2px solid rgba(79,172,254,0.85);border-radius:50%;pointer-events:none;z-index:999999;background:rgba(79,172,254,0.06);will-change:transform;transition:width 0.2s,height 0.2s,border-color 0.2s,background 0.2s;';
-    P.body.appendChild(cur);
-    var mx=W.innerWidth/2, my=W.innerHeight/2, cx=mx, cy=my, hov=false;
-    var lastMx = -1, lastMy = -1;
-    P.addEventListener('mousemove', function(e) {{ mx=e.clientX; my=e.clientY; }}, {{passive:true}});
-    P.addEventListener('mouseover', function(e) {{ if(e.target.closest('a,button,[role=button],input,select,textarea,[onclick],.lang-o')) hov=true; }});
-    P.addEventListener('mouseout',  function(e) {{ if(e.target.closest('a,button,[role=button],input,select,textarea,[onclick],.lang-o')) hov=false; }});
-    (function tick() {{
-        cx += (mx - cx) * 0.18;
-        cy += (my - cy) * 0.18;
-        if (Math.abs(cx - lastMx) > 0.08 || Math.abs(cy - lastMy) > 0.08) {{
-            lastMx = cx; lastMy = cy;
-            var sz = hov ? 46 : 26, hs = sz / 2;
-            cur.style.width = sz + 'px';
-            cur.style.height = sz + 'px';
-            cur.style.borderColor = hov ? '#00f2fe' : 'rgba(79,172,254,0.85)';
-            cur.style.background = hov ? 'rgba(0,242,254,0.12)' : 'rgba(79,172,254,0.06)';
-            cur.style.transform = 'translate3d(' + (cx - hs) + 'px,' + (cy - hs) + 'px, 0)';
-        }}
-        requestAnimationFrame(tick);
-    }})();
+            // ── PARTICLES (GPU BATCHED & VISIBILITY-AWARE) ──
+            var pc = P.getElementById('aml-p');
+            if (pc) pc.remove();
+            pc = P.createElement('canvas');
+            pc.id = 'aml-p';
+            pc.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1;pointer-events:none;opacity:0;transition:opacity 1.8s ease;';
+            P.body.insertBefore(pc, P.body.firstChild);
+            setTimeout(function() {{ pc.style.opacity='1'; }}, 100);
+            var ctx=pc.getContext('2d'), pw, ph, pts=[], pmx=null, pmy=null, isVisible=true;
+            function pR() {{ pw=pc.width=W.innerWidth; ph=pc.height=W.innerHeight; }}
+            W.addEventListener('resize', pR, {{passive:true}});
+            P.addEventListener('mousemove', function(e) {{ pmx=e.clientX; pmy=e.clientY; }}, {{passive:true}});
+            P.addEventListener('mouseleave', function() {{ pmx=null; pmy=null; }});
+            P.addEventListener('visibilitychange', function() {{
+                isVisible = !P.hidden;
+                if (isVisible) requestAnimationFrame(draw);
+            }});
+            pR();
+            var numPts = Math.min(80, Math.max(45, Math.floor(pw * 0.05)));
+            for (var i=0; i<numPts; i++) pts.push({{
+                x: Math.random()*pw, y: Math.random()*ph,
+                vx: (Math.random()-0.5)*0.75, vy: (Math.random()-0.5)*0.75,
+                r: Math.random()*1.3 + 1.1
+            }});
 
-    // ── PARTICLES (GPU BATCHED & VISIBILITY-AWARE) ──
-    var pc = P.getElementById('aml-p');
-    if (pc) pc.remove();
-    pc = P.createElement('canvas');
-    pc.id = 'aml-p';
-    pc.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1;pointer-events:none;opacity:0;transition:opacity 1.8s ease;';
-    P.body.insertBefore(pc, P.body.firstChild);
-    setTimeout(function() {{ pc.style.opacity='1'; }}, 100);
-    var ctx=pc.getContext('2d'), pw, ph, pts=[], pmx=null, pmy=null, isVisible=true;
-    function pR() {{ pw=pc.width=W.innerWidth; ph=pc.height=W.innerHeight; }}
-    W.addEventListener('resize', pR, {{passive:true}});
-    P.addEventListener('mousemove', function(e) {{ pmx=e.clientX; pmy=e.clientY; }}, {{passive:true}});
-    P.addEventListener('mouseleave', function() {{ pmx=null; pmy=null; }});
-    P.addEventListener('visibilitychange', function() {{
-        isVisible = !P.hidden;
-        if (isVisible) requestAnimationFrame(draw);
-    }});
-    pR();
-    var numPts = Math.min(80, Math.max(45, Math.floor(pw * 0.05)));
-    for (var i=0; i<numPts; i++) pts.push({{
-        x: Math.random()*pw, y: Math.random()*ph,
-        vx: (Math.random()-0.5)*0.75, vy: (Math.random()-0.5)*0.75,
-        r: Math.random()*1.3 + 1.1
-    }});
+            function draw() {{
+                if (!isVisible) return;
+                ctx.clearRect(0, 0, pw, ph);
 
-    function draw() {{
-        if (!isVisible) return;
-        ctx.clearRect(0, 0, pw, ph);
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+                ctx.lineWidth = 0.85;
+                for (var i=0; i<pts.length; i++) {{
+                    var a = pts[i];
+                    for (var j=i+1; j<pts.length; j++) {{
+                        var b = pts[j];
+                        var dx = a.x - b.x;
+                        if (dx > 140 || dx < -140) continue;
+                        var dy = a.y - b.y;
+                        if (dy > 140 || dy < -140) continue;
+                        if (dx*dx + dy*dy < 19600) {{
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                        }}
+                    }}
+                }}
+                ctx.stroke();
 
-        // 1. Batched inter-particle connections (single stroke call)
-        ctx.beginPath();
-        ctx.strokeStyle = 'rgba(255,255,255,0.14)';
-        ctx.lineWidth = 0.85;
-        for (var i=0; i<pts.length; i++) {{
-            var a = pts[i];
-            for (var j=i+1; j<pts.length; j++) {{
-                var b = pts[j];
-                var dx = a.x - b.x;
-                if (dx > 140 || dx < -140) continue;
-                var dy = a.y - b.y;
-                if (dy > 140 || dy < -140) continue;
-                if (dx*dx + dy*dy < 19600) {{
-                    ctx.moveTo(a.x, a.y);
-                    ctx.lineTo(b.x, b.y);
+                if (pmx !== null) {{
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'rgba(79,172,254,0.38)';
+                    ctx.lineWidth = 1.3;
+                    for (var i=0; i<pts.length; i++) {{
+                        var a = pts[i];
+                        var dx2 = pmx - a.x;
+                        if (dx2 > 190 || dx2 < -190) continue;
+                        var dy2 = pmy - a.y;
+                        if (dy2 > 190 || dy2 < -190) continue;
+                        if (dx2*dx2 + dy2*dy2 < 36100) {{
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(pmx, pmy);
+                        }}
+                    }}
+                    ctx.stroke();
+                }}
+
+                ctx.beginPath();
+                ctx.fillStyle = 'rgba(255,255,255,0.72)';
+                for (var i=0; i<pts.length; i++) {{
+                    var a = pts[i];
+                    a.x += a.vx; a.y += a.vy;
+                    if (a.x < 0 || a.x > pw) a.vx *= -1;
+                    if (a.y < 0 || a.y > ph) a.vy *= -1;
+                    ctx.moveTo(a.x + a.r, a.y);
+                    ctx.arc(a.x, a.y, a.r, 0, 6.283);
+                }}
+                ctx.fill();
+
+                requestAnimationFrame(draw);
+            }}
+            draw();
+
+            // ── SCROLL ANIMATIONS ──
+            function animEl(el) {{
+                el.style.animation = 'popIn 0.55s cubic-bezier(0.16,1,0.3,1) forwards';
+                var marker = el.querySelector('.ctype');
+                if (marker) {{
+                    var ct = marker.getAttribute('data-ct');
+                    setTimeout(function() {{
+                        var ch = el.querySelector('[data-testid="stPlotlyChart"], iframe');
+                        if (!ch) return;
+                        if (ct === 'pie') {{
+                            ch.style.animation = 'pieExpand 1.5s ease-out forwards';
+                        }} else {{
+                            ch.style.animation = 'progressDraw 1.5s ease-out forwards';
+                        }}
+                    }}, 350);
                 }}
             }}
-        }}
-        ctx.stroke();
-
-        // 2. Batched mouse interaction connections
-        if (pmx !== null) {{
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(79,172,254,0.38)';
-            ctx.lineWidth = 1.3;
-            for (var i=0; i<pts.length; i++) {{
-                var a = pts[i];
-                var dx2 = pmx - a.x;
-                if (dx2 > 190 || dx2 < -190) continue;
-                var dy2 = pmy - a.y;
-                if (dy2 > 190 || dy2 < -190) continue;
-                if (dx2*dx2 + dy2*dy2 < 36100) {{
-                    ctx.moveTo(a.x, a.y);
-                    ctx.lineTo(pmx, pmy);
-                }}
+            if ('IntersectionObserver' in W) {{
+                var obs = new IntersectionObserver(function(ents) {{
+                    var batch = [];
+                    ents.forEach(function(en) {{
+                        if (en.isIntersecting) {{ batch.push(en.target); obs.unobserve(en.target); }}
+                    }});
+                    batch.forEach(function(el, idx) {{
+                        setTimeout(function() {{ animEl(el); }}, idx * 280);
+                    }});
+                }}, {{threshold:0.12, rootMargin:'0px 0px -10% 0px'}});
+                setTimeout(function() {{
+                    P.querySelectorAll('.block-container > div > div > div').forEach(function(el, i) {{
+                        if (i > 1) {{ el.style.opacity = '0'; obs.observe(el); }}
+                    }});
+                }}, 600);
             }}
-            ctx.stroke();
         }}
-
-        // 3. Batched particle dots (single fill call)
-        ctx.beginPath();
-        ctx.fillStyle = 'rgba(255,255,255,0.72)';
-        for (var i=0; i<pts.length; i++) {{
-            var a = pts[i];
-            a.x += a.vx; a.y += a.vy;
-            if (a.x < 0 || a.x > pw) a.vx *= -1;
-            if (a.y < 0 || a.y > ph) a.vy *= -1;
-            ctx.moveTo(a.x + a.r, a.y);
-            ctx.arc(a.x, a.y, a.r, 0, 6.283);
-        }}
-        ctx.fill();
-
-        requestAnimationFrame(draw);
+        boot();
+    }} catch (e) {{
+        console.warn("Iframe sandboxing/cross-origin active; native styles active.", e);
     }}
-    draw();
-
-    // ── SCROLL ANIMATIONS ──
-    function animEl(el) {{
-        el.style.animation = 'popIn 0.55s cubic-bezier(0.16,1,0.3,1) forwards';
-        var marker = el.querySelector('.ctype');
-        if (marker) {{
-            var ct = marker.getAttribute('data-ct');
-            setTimeout(function() {{
-                var ch = el.querySelector('[data-testid="stPlotlyChart"], iframe');
-                if (!ch) return;
-                if (ct === 'pie') {{
-                    ch.classList.add('pie-anim');
-                    ch.style.animation = 'pieLoad 1.5s ease-out forwards';
-                }} else {{
-                    ch.style.animation = 'progressDraw 1.5s ease-out forwards';
-                }}
-            }}, 350);
-        }}
-    }}
-    var obs = new IntersectionObserver(function(ents) {{
-        var batch = [];
-        ents.forEach(function(en) {{
-            if (en.isIntersecting) {{ batch.push(en.target); obs.unobserve(en.target); }}
-        }});
-        batch.forEach(function(el, idx) {{
-            setTimeout(function() {{ animEl(el); }}, idx * 280);
-        }});
-    }}, {{threshold:0.12, rootMargin:'0px 0px -10% 0px'}});
-    setTimeout(function() {{
-        P.querySelectorAll('.block-container > div > div > div').forEach(function(el, i) {{
-            if (i > 1) {{ el.style.opacity = '0'; obs.observe(el); }}
-        }});
-    }}, 600);
-
-    }}
-    boot();
 }})();
 </script>
 """
@@ -418,13 +510,14 @@ components.html(custom_ui, height=0, width=0)
 # =============================================
 # 5. HIDDEN LANG BUTTONS + THEME BUTTON
 # =============================================
-# Hidden language buttons (clicked by navbar JS dropdown)
+st.markdown('<div class="hidden-lang-row">', unsafe_allow_html=True)
 _lc = st.columns(3)
 for i, code in enumerate(["ru", "en", "uz"]):
     with _lc[i]:
         if st.button(f"LANG_{code}", key=f"lang_{code}"):
             st.session_state.lang = code
             st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Theme button (visible, styled by CSS)
 _t1, _t2, _t3 = st.columns([4, 2, 4])
@@ -526,14 +619,18 @@ _cmap = {LABEL_DIS: "#1e293b", LABEL_ESC: "#4facfe"}
 CHART_CFG = {"displayModeBar": False, "responsive": True}
 def playout(**kw):
     d = dict(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-             font=dict(color="#faf3e0", family="Comic Sans MS, cursive", size=14),
-             margin=dict(l=30,r=30,t=50,b=30),
-             legend=dict(font=dict(size=16,color="#faf3e0",family="Comic Sans MS, cursive"),bgcolor="rgba(0,0,0,0)",borderwidth=0),
-             xaxis=dict(gridcolor="rgba(255,255,255,0.06)",zerolinecolor="rgba(255,255,255,0.1)"),
-             yaxis=dict(gridcolor="rgba(255,255,255,0.06)",zerolinecolor="rgba(255,255,255,0.1)"))
+             font=dict(color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif", size=14),
+             margin=dict(l=30, r=30, t=50, b=30),
+             legend=dict(font=dict(size=14, color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif"), bgcolor="rgba(0,0,0,0)", borderwidth=0),
+             xaxis=dict(gridcolor="rgba(255,255,255,0.06)", zerolinecolor="rgba(255,255,255,0.1)",
+                        tickfont=dict(color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif", size=12),
+                        title_font=dict(color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif", size=14)),
+             yaxis=dict(gridcolor="rgba(255,255,255,0.06)", zerolinecolor="rgba(255,255,255,0.1)",
+                        tickfont=dict(color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif", size=12),
+                        title_font=dict(color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif", size=14)))
     d.update(kw); return d
 def render_chart(fig):
-    st.plotly_chart(fig, use_container_width=True, config=CHART_CFG)
+    st.plotly_chart(fig, width="stretch", theme=None, config=CHART_CFG)
 def _ct(chart_type):
     """Inject a hidden chart-type marker so JS observer picks the right animation."""
     st.markdown(f'<span class="ctype" data-ct="{chart_type}" style="display:none"></span>', unsafe_allow_html=True)
