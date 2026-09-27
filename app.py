@@ -976,7 +976,7 @@ Tadqiqotimizning beshta asosiy xulosasi:
 st.markdown('<span class="section-anchor" id="sec-footer"></span>', unsafe_allow_html=True)
 st.markdown(f"""<div class="site-footer"><h3>{t("Мясокомбинат","Myasokombinat","Myasokombinat")}</h3>
 <div class="frow">Team ID: <strong>6927C48E</strong></div>
-<div class="frow">Email: <strong>myasokombinat.aml@gmail.com</strong></div>
-<div class="frow">{t("Телефон","Phone","Telefon")}: <strong>+998 90 123 45 67</strong></div><br>
+<div class="frow">Email: <strong>sarvarnarzullaev25@gmail.com</strong></div>
+<div class="frow">{t("Телефон","Phone","Telefon")}: <strong>+998 90 998 83 72</strong></div><br>
 <div style="color:#555;font-size:0.75rem;">© 2026 {t("Мясокомбинат","Myasokombinat","Myasokombinat")} · AML Alert Prioritization Engine</div></div>""", unsafe_allow_html=True)
 st.markdown("<br><br>", unsafe_allow_html=True)
