@@ -17,7 +17,8 @@ st.set_page_config(page_title="AML Alert Prioritization | Мясокомбина
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = True
 if "lang" not in st.session_state:
-    st.session_state.lang = "en"
+    qp = st.query_params.get("lang", None)
+    st.session_state.lang = qp if qp in ["en", "ru", "uz"] else "en"
 
 is_dark = st.session_state.dark_mode
 lang = st.session_state.lang
@@ -154,8 +155,9 @@ div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"]::a
     }}
 }}
 
-/* Glass Pill Buttons */
-button[data-testid="stBaseButton-secondary"] {{
+/* Glass Pill Buttons & Popovers */
+button[data-testid="stBaseButton-secondary"],
+[data-testid="stPopover"] > button {
     background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) !important;
     backdrop-filter: blur(30px) saturate(160%) !important;
     -webkit-backdrop-filter: blur(30px) saturate(160%) !important;
@@ -163,16 +165,49 @@ button[data-testid="stBaseButton-secondary"] {{
     border: 1px solid rgba(255,255,255,0.18) !important;
     border-top: 1px solid rgba(255,255,255,0.32) !important;
     border-radius: 28px !important;
-    padding: 10px 28px !important;
-    font-size: 1rem !important;
+    padding: 10px 24px !important;
+    font-size: 0.95rem !important;
     box-shadow: 0 6px 24px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.1) inset !important;
     transition: all 0.35s ease !important;
-}}
-button[data-testid="stBaseButton-secondary"]:hover {{
+    width: 100% !important;
+}
+button[data-testid="stBaseButton-secondary"]:hover,
+[data-testid="stPopover"] > button:hover {
     background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06)) !important;
     border-top-color: rgba(255,255,255,0.45) !important;
     transform: translateY(-1px) !important;
-}}
+}
+
+/* Popover Content Floating Box */
+div[data-baseweb="popover"],
+[data-testid="stPopoverBody"] {
+    background: linear-gradient(180deg, rgba(20,20,32,0.96), rgba(12,12,20,0.98)) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    border-top: 1px solid rgba(255,255,255,0.35) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.1) inset !important;
+    padding: 8px !important;
+}
+div[data-baseweb="popover"] button,
+[data-testid="stPopoverBody"] button {
+    border-radius: 14px !important;
+    margin: 4px 0 !important;
+    padding: 8px 16px !important;
+    font-size: 0.9rem !important;
+    background: rgba(255,255,255,0.06) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: var(--aml-text) !important;
+    width: 100% !important;
+    transition: all 0.2s ease !important;
+}
+div[data-baseweb="popover"] button:hover,
+[data-testid="stPopoverBody"] button:hover {
+    background: rgba(79,172,254,0.25) !important;
+    border-color: rgba(79,172,254,0.45) !important;
+    transform: none !important;
+}
 
 /* Universal cross-browser animations */
 @keyframes popIn {{
@@ -247,16 +282,6 @@ button[data-testid="stBaseButton-secondary"]:hover {{
 ::-webkit-scrollbar {{ width: 5px; }}
 ::-webkit-scrollbar-track {{ background: transparent; }}
 ::-webkit-scrollbar-thumb {{ background: rgba(79,172,254,0.3); border-radius: 3px; }}
-
-.hidden-lang-row {{
-    position: absolute !important;
-    top: -9999px !important;
-    left: -9999px !important;
-    opacity: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    pointer-events: none !important;
-}}
 """
 
 st.markdown(f"<style>{MAIN_CSS}</style>", unsafe_allow_html=True)
@@ -344,9 +369,22 @@ custom_ui = f"""
                     e.stopPropagation();
                     var code = this.getAttribute('data-lang');
                     langDd.style.display = 'none';
-                    var bs = P.querySelectorAll('button');
-                    for (var b of bs) {{
-                        if ((b.textContent||'').trim() === 'LANG_' + code) {{ b.click(); return; }}
+                    try {{
+                        var u = new URL(W.location.href);
+                        u.searchParams.set('lang', code);
+                        W.location.href = u.toString();
+                    }} catch(err) {{
+                        var pop = P.querySelector('[data-testid="stPopover"] > button');
+                        if (pop) pop.click();
+                        setTimeout(function() {{
+                            var bs = P.querySelectorAll('button');
+                            for (var b of bs) {{
+                                var txt = (b.textContent||'').trim();
+                                if (code === 'en' && txt === 'English') {{ b.click(); return; }}
+                                if (code === 'ru' && txt === 'Русский') {{ b.click(); return; }}
+                                if (code === 'uz' && txt === "O'zbek") {{ b.click(); return; }}
+                            }}
+                        }}, 80);
                     }}
                 }});
             }});
@@ -508,25 +546,26 @@ custom_ui = f"""
 components.html(custom_ui, height=0, width=0)
 
 # =============================================
-# 5. HIDDEN LANG BUTTONS + THEME BUTTON
+# 5. CONTROLS: THEME & LANGUAGE POPUP
 # =============================================
-st.markdown('<div class="hidden-lang-row">', unsafe_allow_html=True)
-_lc = st.columns(3)
-for i, code in enumerate(["ru", "en", "uz"]):
-    with _lc[i]:
-        if st.button(f"LANG_{code}", key=f"lang_{code}"):
-            st.session_state.lang = code
-            st.rerun()
-st.markdown('</div>', unsafe_allow_html=True)
+_c_spacer_l, _c_theme, _c_lang, _c_spacer_r = st.columns([3, 2, 2, 3])
 
-# Theme button (visible, styled by CSS)
-_t1, _t2, _t3 = st.columns([4, 2, 4])
-with _t2:
+with _c_theme:
     lbl = "☀️ " + t("Светлая тема", "Light", "Yorug'") if is_dark \
         else "🌙 " + t("Тёмная тема", "Dark", "Qorong'i")
-    if st.button(lbl, key="theme_btn"):
+    if st.button(lbl, key="theme_btn", width="stretch"):
         st.session_state.dark_mode = not is_dark
         st.rerun()
+
+with _c_lang:
+    _lang_map = {"en": "English", "ru": "Русский", "uz": "O'zbek"}
+    _curr_name = _lang_map.get(lang, "English")
+    with st.popover(f"🌐 {_curr_name} ▾", width="stretch"):
+        for code, name in [("en", "English"), ("ru", "Русский"), ("uz", "O'zbek")]:
+            if st.button(name, key=f"pop_lang_{code}", width="stretch"):
+                st.session_state.lang = code
+                st.query_params["lang"] = code
+                st.rerun()
 
 # =============================================
 # 6. DATA (OPTIMIZED MEMORY PIPELINE)
