@@ -56,6 +56,8 @@ _nav_js = ",".join([f"[{json.dumps(a)},{json.dumps(l)}]" for a, l in zip(_ids, _
 # 4. CSS + JS (CROSS-BROWSER & CROSS-ORIGIN SAFE)
 # =============================================
 MAIN_CSS = f"""
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 :root {{
     --aml-bg: {BG};
     --aml-text: #faf3e0;
@@ -68,11 +70,11 @@ html, body, .stApp {{
     background-color: var(--aml-bg) !important;
     color: var(--aml-text) !important;
     transition: background-color 0.85s ease !important;
-    font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
 }}
 
 .stApp * {{
-    font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
 }}
 
 /* Typography: scoped specifically to text elements, avoiding blanket .stApp div */
@@ -281,7 +283,7 @@ custom_ui = f"""
             if (nav) nav.remove();
             nav = P.createElement('div');
             nav.id = 'aml-nav';
-            nav.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:99999;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 20px;background:linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.03));backdrop-filter:blur(40px) saturate(180%) brightness(1.05);-webkit-backdrop-filter:blur(40px) saturate(180%) brightness(1.05);border-bottom:1px solid rgba(255,255,255,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.08) inset;font-family:Comic Sans MS,cursive;box-sizing:border-box;';
+            nav.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:99999;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 20px;background:linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.03));backdrop-filter:blur(40px) saturate(180%) brightness(1.05);-webkit-backdrop-filter:blur(40px) saturate(180%) brightness(1.05);border-bottom:1px solid rgba(255,255,255,0.15);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 1px 0 rgba(255,255,255,0.08) inset;font-family:\\'Inter\\',-apple-system,sans-serif;box-sizing:border-box;';
             var secs = [{_nav_js}];
             var h = '<span style="position:absolute;left:16px;font-weight:bold;background:linear-gradient(45deg,#4facfe,#00f2fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:0.95rem;">MK</span>';
             for (var i=0; i<secs.length; i++) {{
@@ -606,15 +608,15 @@ _cmap = {LABEL_DIS: "#1e293b", LABEL_ESC: "#4facfe"}
 CHART_CFG = {"displayModeBar": False, "responsive": True}
 def playout(**kw):
     d = dict(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-             font=dict(color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif", size=14),
+             font=dict(color="#faf3e0", family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif", size=14),
              margin=dict(l=30, r=30, t=50, b=30),
-             legend=dict(font=dict(size=14, color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif"), bgcolor="rgba(0,0,0,0)", borderwidth=0),
+             legend=dict(font=dict(size=14, color="#faf3e0", family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"), bgcolor="rgba(0,0,0,0)", borderwidth=0),
              xaxis=dict(gridcolor="rgba(255,255,255,0.06)", zerolinecolor="rgba(255,255,255,0.1)",
-                        tickfont=dict(color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif", size=12),
-                        title_font=dict(color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif", size=14)),
+                        tickfont=dict(color="#faf3e0", family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif", size=12),
+                        title_font=dict(color="#faf3e0", family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif", size=14)),
              yaxis=dict(gridcolor="rgba(255,255,255,0.06)", zerolinecolor="rgba(255,255,255,0.1)",
-                        tickfont=dict(color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif", size=12),
-                        title_font=dict(color="#faf3e0", family="Comic Sans MS, Comic Sans, cursive, sans-serif", size=14)))
+                        tickfont=dict(color="#faf3e0", family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif", size=12),
+                        title_font=dict(color="#faf3e0", family="Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif", size=14)))
     d.update(kw); return d
 def render_chart(fig):
     st.plotly_chart(fig, width="stretch", theme=None, config=CHART_CFG)
