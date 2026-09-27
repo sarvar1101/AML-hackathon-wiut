@@ -16,9 +16,12 @@ st.set_page_config(page_title="AML Alert Prioritization | Мясокомбина
 # =============================================
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = True
-if "lang" not in st.session_state:
-    qp = st.query_params.get("lang", None)
-    st.session_state.lang = qp if qp in ["en", "ru", "uz"] else "en"
+
+qp = st.query_params.get("lang", None)
+if qp in ["en", "ru", "uz"]:
+    st.session_state.lang = qp
+elif "lang" not in st.session_state:
+    st.session_state.lang = "en"
 
 is_dark = st.session_state.dark_mode
 lang = st.session_state.lang
@@ -155,9 +158,8 @@ div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"]::a
     }}
 }}
 
-/* Glass Pill Buttons & Popovers */
-button[data-testid="stBaseButton-secondary"],
-[data-testid="stPopover"] > button {{
+/* Glass Pill Buttons */
+button[data-testid="stBaseButton-secondary"] {{
     background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) !important;
     backdrop-filter: blur(30px) saturate(160%) !important;
     -webkit-backdrop-filter: blur(30px) saturate(160%) !important;
@@ -165,48 +167,16 @@ button[data-testid="stBaseButton-secondary"],
     border: 1px solid rgba(255,255,255,0.18) !important;
     border-top: 1px solid rgba(255,255,255,0.32) !important;
     border-radius: 28px !important;
-    padding: 10px 24px !important;
-    font-size: 0.95rem !important;
+    padding: 10px 32px !important;
+    font-size: 1rem !important;
     box-shadow: 0 6px 24px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.1) inset !important;
     transition: all 0.35s ease !important;
     width: 100% !important;
 }}
-button[data-testid="stBaseButton-secondary"]:hover,
-[data-testid="stPopover"] > button:hover {{
+button[data-testid="stBaseButton-secondary"]:hover {{
     background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06)) !important;
     border-top-color: rgba(255,255,255,0.45) !important;
     transform: translateY(-1px) !important;
-}}
-
-/* Popover Content Floating Box */
-div[data-baseweb="popover"],
-[data-testid="stPopoverBody"] {{
-    background: linear-gradient(180deg, rgba(20,20,32,0.96), rgba(12,12,20,0.98)) !important;
-    backdrop-filter: blur(40px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
-    border: 1px solid rgba(255,255,255,0.18) !important;
-    border-top: 1px solid rgba(255,255,255,0.35) !important;
-    border-radius: 18px !important;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.1) inset !important;
-    padding: 8px !important;
-}}
-div[data-baseweb="popover"] button,
-[data-testid="stPopoverBody"] button {{
-    border-radius: 14px !important;
-    margin: 4px 0 !important;
-    padding: 8px 16px !important;
-    font-size: 0.9rem !important;
-    background: rgba(255,255,255,0.06) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    color: var(--aml-text) !important;
-    width: 100% !important;
-    transition: all 0.2s ease !important;
-}}
-div[data-baseweb="popover"] button:hover,
-[data-testid="stPopoverBody"] button:hover {{
-    background: rgba(79,172,254,0.25) !important;
-    border-color: rgba(79,172,254,0.45) !important;
-    transform: none !important;
 }}
 
 /* Universal cross-browser animations */
@@ -373,19 +343,7 @@ custom_ui = f"""
                         var u = new URL(W.location.href);
                         u.searchParams.set('lang', code);
                         W.location.href = u.toString();
-                    }} catch(err) {{
-                        var pop = P.querySelector('[data-testid="stPopover"] > button');
-                        if (pop) pop.click();
-                        setTimeout(function() {{
-                            var bs = P.querySelectorAll('button');
-                            for (var b of bs) {{
-                                var txt = (b.textContent||'').trim();
-                                if (code === 'en' && txt === 'English') {{ b.click(); return; }}
-                                if (code === 'ru' && txt === 'Русский') {{ b.click(); return; }}
-                                if (code === 'uz' && txt === "O'zbek") {{ b.click(); return; }}
-                            }}
-                        }}, 80);
-                    }}
+                    }} catch(err) {{}}
                 }});
             }});
 
@@ -546,26 +504,16 @@ custom_ui = f"""
 components.html(custom_ui, height=0, width=0)
 
 # =============================================
-# 5. CONTROLS: THEME & LANGUAGE POPUP
+# 5. CONTROLS: THEME TOGGLE (CENTERED)
 # =============================================
-_c_spacer_l, _c_theme, _c_lang, _c_spacer_r = st.columns([3, 2, 2, 3])
+_c_spacer_l, _c_theme, _c_spacer_r = st.columns([3.8, 2.4, 3.8])
 
 with _c_theme:
-    lbl = "☀️ " + t("Светлая тема", "Light", "Yorug'") if is_dark \
-        else "🌙 " + t("Тёмная тема", "Dark", "Qorong'i")
+    lbl = "☀️ " + t("Светлая тема", "Light Mode", "Yorug' rejim") if is_dark \
+        else "🌙 " + t("Тёмная тема", "Dark Mode", "Qorong'i rejim")
     if st.button(lbl, key="theme_btn", width="stretch"):
         st.session_state.dark_mode = not is_dark
         st.rerun()
-
-with _c_lang:
-    _lang_map = {"en": "English", "ru": "Русский", "uz": "O'zbek"}
-    _curr_name = _lang_map.get(lang, "English")
-    with st.popover(f"🌐 {_curr_name} ▾", width="stretch"):
-        for code, name in [("en", "English"), ("ru", "Русский"), ("uz", "O'zbek")]:
-            if st.button(name, key=f"pop_lang_{code}", width="stretch"):
-                st.session_state.lang = code
-                st.query_params["lang"] = code
-                st.rerun()
 
 # =============================================
 # 6. DATA (OPTIMIZED MEMORY PIPELINE)
