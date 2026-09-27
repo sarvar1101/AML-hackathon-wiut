@@ -157,7 +157,7 @@ div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlock"]::a
 
 /* Glass Pill Buttons & Popovers */
 button[data-testid="stBaseButton-secondary"],
-[data-testid="stPopover"] > button {
+[data-testid="stPopover"] > button {{
     background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) !important;
     backdrop-filter: blur(30px) saturate(160%) !important;
     -webkit-backdrop-filter: blur(30px) saturate(160%) !important;
@@ -170,17 +170,17 @@ button[data-testid="stBaseButton-secondary"],
     box-shadow: 0 6px 24px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.1) inset !important;
     transition: all 0.35s ease !important;
     width: 100% !important;
-}
+}}
 button[data-testid="stBaseButton-secondary"]:hover,
-[data-testid="stPopover"] > button:hover {
+[data-testid="stPopover"] > button:hover {{
     background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06)) !important;
     border-top-color: rgba(255,255,255,0.45) !important;
     transform: translateY(-1px) !important;
-}
+}}
 
 /* Popover Content Floating Box */
 div[data-baseweb="popover"],
-[data-testid="stPopoverBody"] {
+[data-testid="stPopoverBody"] {{
     background: linear-gradient(180deg, rgba(20,20,32,0.96), rgba(12,12,20,0.98)) !important;
     backdrop-filter: blur(40px) saturate(180%) !important;
     -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
@@ -189,9 +189,9 @@ div[data-baseweb="popover"],
     border-radius: 18px !important;
     box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.1) inset !important;
     padding: 8px !important;
-}
+}}
 div[data-baseweb="popover"] button,
-[data-testid="stPopoverBody"] button {
+[data-testid="stPopoverBody"] button {{
     border-radius: 14px !important;
     margin: 4px 0 !important;
     padding: 8px 16px !important;
@@ -201,13 +201,13 @@ div[data-baseweb="popover"] button,
     color: var(--aml-text) !important;
     width: 100% !important;
     transition: all 0.2s ease !important;
-}
+}}
 div[data-baseweb="popover"] button:hover,
-[data-testid="stPopoverBody"] button:hover {
+[data-testid="stPopoverBody"] button:hover {{
     background: rgba(79,172,254,0.25) !important;
     border-color: rgba(79,172,254,0.45) !important;
     transform: none !important;
-}
+}}
 
 /* Universal cross-browser animations */
 @keyframes popIn {{
